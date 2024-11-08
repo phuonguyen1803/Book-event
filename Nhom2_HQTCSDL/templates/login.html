@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Đăng Nhập</h1>
+
+        <!-- Form đăng nhập -->
+        <form id="loginForm" class="mb-4">
+            <div class="form-group">
+                <label for="user_email" class="form-label">Email</label>
+                <input type="email" name="user_email" id="user_email" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="user_password" class="form-label">Mật khẩu</label>
+                <input type="password" name="user_password" id="user_password" class="form-control" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Đăng Nhập</button>
+        </form>
+
+        <p class="mt-3">Chưa có tài khoản? <a href="signup.html">Đăng ký ở đây</a>.</p>
+
+        <script>
+        // Xử lý form đăng nhập
+        document.getElementById("loginForm").onsubmit = async function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await fetch('/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            if (result.token) {
+                localStorage.setItem("token", result.token);
+                window.location.href = '/'; // Chỉnh sửa đường dẫn chuyển hướng nếu cần
+            }
+        };
+        </script>
+    </div>
+</body>
+</html>

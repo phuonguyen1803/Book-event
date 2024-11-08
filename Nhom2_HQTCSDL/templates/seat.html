@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt vé sự kiện âm nhạc</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #111;
+            color: #fff;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+        .event {
+            border: 1px solid #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .event h2 {
+            color: #4CAF50;
+        }
+        .seat-selection {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+        }
+        .btn-group {
+            display: flex;
+            gap: 5px;
+        }
+        .btn-group button {
+            padding: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .submit-btn {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Chọn vé sự kiện âm nhạc</h1>
+
+    <div class="event" data-event-id="1">
+        <h2>Born Pink World Tour</h2>
+        <p>Thời gian: 29/07/2023 - 30/07/2023</p>
+        <p>Địa điểm: Sân Vận Động Mỹ Đình</p>
+        <p>Giá vé: 1.200.000 VNĐ/người</p>
+        <div class="seat-selection">
+            <span>Số lượng vé:</span>
+            <div class="btn-group">
+                <button onclick="decrement('event1')">-</button>
+                <input type="text" id="event1" value="0" readonly style="width: 30px; text-align: center;">
+                <button onclick="increment('event1')">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="event" data-event-id="2">
+        <h2>Music Festival 8Wonder</h2>
+        <p>Thời gian: 22/07/2023</p>
+        <p>Địa điểm: Vinpearl Nha Trang</p>
+        <p>Giá vé: 1.200.000 VNĐ/người</p>
+        <div class="seat-selection">
+            <span>Số lượng vé:</span>
+            <div class="btn-group">
+                <button onclick="decrement('event2')">-</button>
+                <input type="text" id="event2" value="0" readonly style="width: 30px; text-align: center;">
+                <button onclick="increment('event2')">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="event" data-event-id="3">
+        <h2>Glamping Music Festival</h2>
+        <p>Thời gian: 29 & 30/9/2023</p>
+        <p>Địa điểm: Yên Sở Park, Gamuda City</p>
+        <p>Giá vé: 660.000 VNĐ/người</p>
+        <div class="seat-selection">
+            <span>Số lượng vé:</span>
+            <div class="btn-group">
+                <button onclick="decrement('event3')">-</button>
+                <input type="text" id="event3" value="0" readonly style="width: 30px; text-align: center;">
+                <button onclick="increment('event3')">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="submit-btn" onclick="submitSelection()">Vui lòng chọn vé</div>
+</div>
+
+<script>
+    function increment(id) {
+        let qty = document.getElementById(id);
+        if (parseInt(qty.value) < 10) {  // Giới hạn vé ở mức 10 vé
+            qty.value = parseInt(qty.value) + 1;
+        }
+    }
+
+    function decrement(id) {
+        let qty = document.getElementById(id);
+        if (parseInt(qty.value) > 0) {
+            qty.value = parseInt(qty.value) - 1;
+        }
+    }
+
+    async function submitSelection() {
+        const events = document.querySelectorAll('.event');
+        const selectedTickets = [];
+
+        events.forEach(event => {
+            const eventId = event.getAttribute('data-event-id');
+            const ticketCount = parseInt(document.getElementById(`event${eventId}`).value);
+            if (ticketCount > 0) {
+                selectedTickets.push({ eventId, quantity: ticketCount });
+            }
+        });
+
+        if (selectedTickets.length === 0) {
+            alert("Vui lòng chọn ít nhất một vé.");
+            return;
+        }
+
+        // Gửi yêu cầu đặt vé đến server
+        const response = await fetch('/seat/book_tickets', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(selectedTickets) // Gửi danh sách vé đã chọn
+        });
+
+        const result = await response.json();
+        alert(result.message); // Hiển thị thông báo từ server
+
+        // Có thể chuyển hướng đến trang thanh toán hoặc một trang khác nếu cần
+    }
+</script>
+
+</body>
+</html>

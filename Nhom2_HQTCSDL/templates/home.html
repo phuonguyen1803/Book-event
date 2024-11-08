@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Danh Sách Sự Kiện</h1>
+        <div id="eventList" class="mt-3"></div>
+    </div>
+
+    <script>
+        async function fetchEvents() {
+            try {
+                const response = await fetch('/events');
+                if (!response.ok) {
+                    throw new Error('Không thể lấy sự kiện');
+                }
+                const events = await response.json();
+                displayEvents(events);
+            } catch (error) {
+                console.error('Lỗi:', error);
+                document.getElementById('eventList').innerHTML = '<p class="text-danger">Không thể tải sự kiện.</p>';
+            }
+        }
+
+        function displayEvents(events) {
+            const eventListDiv = document.getElementById('eventList');
+            eventListDiv.innerHTML = '';  // Xóa nội dung cũ
+            events.forEach(event => {
+                const eventItem = `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">${event.event_name}</h5>
+                            <p class="card-text">${event.description}</p>
+                            <p class="card-text"><small class="text-muted">Ngày: ${event.date}</small></p>
+                        </div>
+                    </div>
+                `;
+                eventListDiv.innerHTML += eventItem;
+            });
+        }
+
+        // Gọi hàm để lấy sự kiện khi trang được tải
+        fetchEvents();
+    </script>
+</body>
+</html>
